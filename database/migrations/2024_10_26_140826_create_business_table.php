@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');  // kolom user_id otomatis mereference ke id di users table, onDelete cascade agar data ikut terhapus jika user_id dihapus
-            $table->dateTime('opening_hours');
+            $table->string('opening_hours');    // bisa juga pakai dateTime
             $table->enum('status',['open', 'closed'])->default('open');
             $table->timestamps();
         });
