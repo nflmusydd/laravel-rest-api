@@ -10,8 +10,13 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     public function index(){
-        $users = User::paginate(10);
-        return response()->json($users);
+        $users = User::all();
+        return view('users', compact('users'));
+        // return response()->json($users);
+    }
+
+    public function create(){
+        return view('create_user');
     }
 
     public function store(Request $request){
@@ -19,7 +24,7 @@ class UserController extends Controller
             'name'=>'required',
             'role'=>'required',
             'email'=>'required',
-            'password'=>'required'
+            'password'=>'required',
         ]);
 
         if($validator->fails()){
@@ -30,12 +35,31 @@ class UserController extends Controller
             $validator->validated(),
             ['password'=> bcrypt($request->password)]
         ));
-        return response()->json('Berhasil menambahkan User!');
+        return redirect()->back();
+    }
+
+    public function update($id, Request $request)
+    {
+        $user = User::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'name'=>'required',
+            'role'=>'required',
+            'email'=>'required',
+            'password'=>'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        $user->name = $request->name;
+        $user->role = $request->role;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        return redirect()->back();
     }
 
     public function destroy($id){
         $user = User::findOrFail($id);
         $user->delete();
-        return response()->json('Berhasil menghapus User!');
+        return redirect()->back();
     }
 }
